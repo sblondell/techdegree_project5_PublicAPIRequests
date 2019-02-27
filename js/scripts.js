@@ -1,7 +1,7 @@
-var employeeList = null;
-var dom_employeeList = null;
-const employeeGallery = document.getElementById('gallery');
+const div_employeeGallery = document.getElementById('gallery');
 const documentBody = document.querySelector('body');
+var div_employeeCards = null;
+var api_employeeList = null;
 
 
 //
@@ -46,9 +46,9 @@ const promise_employeeDir =
     .then(checkStatus)
     .then(response => response.json())
     .then(response => {
-      employeeList = response.results;
-      createEmployeeCards(employeeList);
-      dom_employeeList = document.querySelectorAll('.card');
+      api_employeeList = response.results;
+      createEmployeeCards(api_employeeList);
+      div_employeeCards = document.querySelectorAll('.card');
       createCardListeners();
       return response;
     })
@@ -79,22 +79,20 @@ function createEmployeeCards(employeeList) {
 		    </div>
 		  </div>`;
   }
-  employeeGallery.innerHTML = innerHTML;
+  div_employeeGallery.innerHTML = innerHTML;
 }
 
 /*
  * Searches for a matching email address (received from the 'clicked' employee card') against the employee list.
+ * Searches for email because emails are generally not duplicated.
  * Creates a modal for that employee.
  * @param   {Node}  employee - a single employee DOM node object 
  */
 function createEmployeeModal(employee) {
-  console.log(employee);
   var innerHTML = '';
   const search_Email = employee.querySelector('p').innerText;
 
-  const found_employee = employeeList.find((employeeListEmp) => {
-    return employeeListEmp.email === search_Email;
-  });
+  const found_employee = api_employeeList.find(api_employee => api_employee.email === search_Email);
 
   innerHTML += `<div class="modal">                                                                                
 		  <button type="button" id="modal-close-btn" class="modal-close-btn"><strong>X</strong></button> 
@@ -114,16 +112,7 @@ function createEmployeeModal(employee) {
   div_modalContainer.innerHTML = innerHTML;
   div_modalContainer.style.display = '';
 
-  //Event listener for closing the modal windows
-  document.getElementById('modal-close-btn')
-    .addEventListener('click', () => div_modalContainer.style.display = 'none');
-  //Added the ability to close the modal using the 'esc' key
-  document
-    .addEventListener('keydown', (e) => { 
-      if (e.key.toLowerCase() === 'escape') { 
-	div_modalContainer.style.display = 'none';
-      }
-    });
+  closeModalListener();
 }
 
 
@@ -137,7 +126,16 @@ function createEmployeeModal(employee) {
  * @param   {NodeList}   employees - a DOM node element list of all the employees on the page
  */
 function createCardListeners() {
-  for (employee of dom_employeeList) {
-    employee.addEventListener('click', (e) => {createEmployeeModal(e.target);});
+  for (employee of div_employeeCards) {
+    employee.addEventListener('click', (e) => createEmployeeModal(e.currentTarget));
   }
+}
+
+function closeModalListener() {
+  //'Click' event listener for closing the modal window
+  document.getElementById('modal-close-btn')
+    .addEventListener('click', () => div_modalContainer.style.display = 'none');
+  //Added the ability to close the modal using the 'esc' key
+  document
+    .addEventListener('keydown', (e) => e.key.toLowerCase() === 'escape' ? div_modalContainer.style.display = 'none' : false);
 }
