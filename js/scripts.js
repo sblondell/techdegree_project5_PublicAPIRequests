@@ -1,6 +1,17 @@
 var employeeList = null;
+var dom_employeeList = null;
 const employeeGallery = document.getElementById('gallery');
+const documentBody = document.querySelector('body');
 
+
+//
+// SETTING UP MODAL FRAMEWORK
+//
+const div_modalContainer = document.createElement('DIV');
+
+div_modalContainer.className = 'modal-container';
+div_modalContainer.style.display = 'none';
+documentBody.insertBefore(div_modalContainer, documentBody.querySelector('script'));
 
 
 //
@@ -37,7 +48,8 @@ const promise_employeeDir =
     .then(response => {
       employeeList = response.results;
       createEmployeeCards(employeeList);
-      createCardListeners(document.querySelectorAll('.card'));
+      dom_employeeList = document.querySelectorAll('.card');
+      createCardListeners();
       return response;
     })
     .catch(error => console.log('There was a problem with the response:', error));
@@ -76,36 +88,42 @@ function createEmployeeCards(employeeList) {
  * @param   {Node}  employee - a single employee DOM node object 
  */
 function createEmployeeModal(employee) {
+  console.log(employee);
   var innerHTML = '';
-  const documentBody = document.getElementsByTagName('body')[0];
   const search_Email = employee.querySelector('p').innerText;
 
   const found_employee = employeeList.find((employeeListEmp) => {
     return employeeListEmp.email === search_Email;
   });
 
-  innerHTML += `<div class="modal-container">                                                                          
-		  <div class="modal">                                                                                
-		    <button type="button" id="modal-close-btn" class="modal-close-btn"><strong>X</strong></button> 
-		    <div class="modal-info-container">                                                             
-		      <img class="modal-img" src="${found_employee.picture.large}" alt="profile picture">           
-		      <h3 id="name" class="modal-name cap">${found_employee.name.first} ${found_employee.name.last}</h3>
-		      <p class="modal-text">${found_employee.email}</p>                                                            
-		      <p class="modal-text cap">${found_employee.location.city}</p>                                                         
-		      <hr>                                                                                       
-		      <p class="modal-text">${found_employee.cell}</p>                                                   
-		      <p class="modal-text">${found_employee.location.street}, 
-					    ${found_employee.location.city}, ${found_employee.location.state} ${found_employee.location.postcode}
-		      </p>
-		      <p class="modal-text">Birthday: ${found_employee.dob.date}</p>                                            
-		    </div>                                                                                         
-		  </div>
+  innerHTML += `<div class="modal">                                                                                
+		  <button type="button" id="modal-close-btn" class="modal-close-btn"><strong>X</strong></button> 
+		  <div class="modal-info-container">                                                             
+		    <img class="modal-img" src="${found_employee.picture.large}" alt="profile picture">           
+		    <h3 id="name" class="modal-name cap">${found_employee.name.first} ${found_employee.name.last}</h3>
+		    <p class="modal-text">${found_employee.email}</p>                                                            
+		    <p class="modal-text cap">${found_employee.location.city}</p>                                                         
+		    <hr>                                                                                       
+		    <p class="modal-text">${found_employee.cell}</p>                                                   
+		    <p class="modal-text">${found_employee.location.street}, 
+					  ${found_employee.location.city}, ${found_employee.location.state} ${found_employee.location.postcode}
+		    </p>
+		    <p class="modal-text">Birthday: ${found_employee.dob.date}</p>                                            
+		  </div>                                                                                         
 		</div>`;
-  documentBody.innerHTML += innerHTML;
+  div_modalContainer.innerHTML = innerHTML;
+  div_modalContainer.style.display = '';
 
   //Event listener for closing the modal windows
-  document.getElementById('modal-close-btn').
-    addEventListener('click', () => documentBody.removeChild(document.querySelector('.modal-container')));
+  document.getElementById('modal-close-btn')
+    .addEventListener('click', () => div_modalContainer.style.display = 'none');
+  //Added the ability to close the modal using the 'esc' key
+  document
+    .addEventListener('keydown', (e) => { 
+      if (e.key.toLowerCase() === 'escape') { 
+	div_modalContainer.style.display = 'none';
+      }
+    });
 }
 
 
@@ -118,8 +136,8 @@ function createEmployeeModal(employee) {
  * Create individual listeners for each employee card.
  * @param   {NodeList}   employees - a DOM node element list of all the employees on the page
  */
-function createCardListeners(employees) {
-  for (employee of employees) {
-    employee.addEventListener('click', (e) => {console.log(e.target); createEmployeeModal(e.target)});
+function createCardListeners() {
+  for (employee of dom_employeeList) {
+    employee.addEventListener('click', (e) => {createEmployeeModal(e.target);});
   }
 }
