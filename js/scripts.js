@@ -1,6 +1,6 @@
-const div_employeeGallery = document.getElementById('gallery');
-const documentBody = document.querySelector('body');
-var div_employeeCards = null;
+const dom_body = document.querySelector('body');
+const dom_employeeGallery = document.getElementById('gallery');
+var dom_employeeCards = null;
 var api_employeeList = null;
 
 
@@ -11,22 +11,13 @@ const div_modalContainer = document.createElement('DIV');
 
 div_modalContainer.className = 'modal-container';
 div_modalContainer.style.display = 'none';
-documentBody.insertBefore(div_modalContainer, documentBody.querySelector('script'));
+dom_body.insertBefore(div_modalContainer, dom_body.querySelector('script'));
 
 
 //
 // API REQUEST AND RESPONSE
 //
-const API_address = `https://randomuser.me/api/?results=12&inc=name,location,email,picture,dob,cell`;
-const API_config = {
-		     method: 'POST',
-		     headers: {'Content-type': 'application/json'},
-		     body: {
-			     "results": "12",
-			     "password": "5-10",
-			     "inc": "name,location,email,picture,phone,dob,cell"
-		           }
-		   };
+const API_address = `https://randomuser.me/api/?results=12&nat=US&inc=name,location,email,picture,dob,cell`;
 
 /*
  * Used to check if response from API is completed.
@@ -41,18 +32,17 @@ function checkStatus(response) {
   }
 }
 
-const promise_employeeDir = 
-  fetch(API_address)
-    .then(checkStatus)
-    .then(response => response.json())
-    .then(response => {
-      api_employeeList = response.results;
-      createEmployeeCards(api_employeeList);
-      div_employeeCards = document.querySelectorAll('.card');
-      createCardListeners();
-      return response;
-    })
-    .catch(error => console.log('There was a problem with the response:', error));
+fetch(API_address)
+  .then(checkStatus)
+  .then(response => response.json())
+  .then(response => {
+    api_employeeList = response.results;
+    createEmployeeCards(api_employeeList);
+    dom_employeeCards = document.querySelectorAll('.card');
+    createCardListeners();
+    return response;
+  })
+  .catch(error => console.log('There was a problem with the response:', error));
 
 
 
@@ -79,20 +69,29 @@ function createEmployeeCards(employeeList) {
 		    </div>
 		  </div>`;
   }
-  div_employeeGallery.innerHTML = innerHTML;
+  dom_employeeGallery.innerHTML = innerHTML;
 }
 
 /*
  * Searches for a matching email address (received from the 'clicked' employee card') against the employee list.
  * Searches for email because emails are generally not duplicated.
  * Creates a modal for that employee.
- * @param   {Node}  employee - a single employee DOM node object 
+ * @param   {Object}  employee - a single employee DOM node object 
  */
 function createEmployeeModal(employee) {
-  var innerHTML = '';
   const search_Email = employee.querySelector('p').innerText;
-
-  const found_employee = api_employeeList.find(api_employee => api_employee.email === search_Email);
+  const found_employee = api_employeeList.find(api_employee => api_employee.email === search_Email);//Find the employee in the local "database"
+  //Visually formatting some of the employee information
+  var employeeBirthDay = found_employee.dob.date.slice(5,7) + "/" +  //Month
+			 found_employee.dob.date.slice(8,10) + "/" + //Day
+			 found_employee.dob.date.slice(0,4);         //Year
+  var employeeStreetNo = found_employee.location.street.match(/[0-9]+/)[0];
+  var employeeStreetName = found_employee.location.street.match(/[^0-9 ]+/)[0].charAt(0).toUpperCase() +
+			   found_employee.location.street.match(/[^0-9 ]+/)[0].slice(1);
+  var employeeStreet = employeeStreetNo + " " + employeeStreetName;
+  var employeeCity = found_employee.location.city.charAt(0).toUpperCase() + found_employee.location.city.slice(1);
+  var employeeState = found_employee.location.state.charAt(0).toUpperCase() + found_employee.location.state.slice(1);
+  var innerHTML = '';
 
   innerHTML += `<div class="modal">                                                                                
 		  <button type="button" id="modal-close-btn" class="modal-close-btn"><strong>X</strong></button> 
@@ -103,10 +102,10 @@ function createEmployeeModal(employee) {
 		    <p class="modal-text cap">${found_employee.location.city}</p>                                                         
 		    <hr>                                                                                       
 		    <p class="modal-text">${found_employee.cell}</p>                                                   
-		    <p class="modal-text">${found_employee.location.street}, 
-					  ${found_employee.location.city}, ${found_employee.location.state} ${found_employee.location.postcode}
+		    <p class="modal-text">${employeeStreet}, 
+					  ${employeeCity}, ${employeeState} ${found_employee.location.postcode}
 		    </p>
-		    <p class="modal-text">Birthday: ${found_employee.dob.date}</p>                                            
+		    <p class="modal-text">Birthday: ${employeeBirthDay}</p>                                            
 		  </div>                                                                                         
 		</div>`;
   div_modalContainer.innerHTML = innerHTML;
@@ -126,16 +125,18 @@ function createEmployeeModal(employee) {
  * @param   {NodeList}   employees - a DOM node element list of all the employees on the page
  */
 function createCardListeners() {
-  for (employee of div_employeeCards) {
+  for (employee of dom_employeeCards) {
     employee.addEventListener('click', (e) => createEmployeeModal(e.currentTarget));
   }
 }
 
+/*
+ * 'Click' event listener for closing the modal window.
+ * Added the ability to close the modal using the 'esc' key.
+ */
 function closeModalListener() {
-  //'Click' event listener for closing the modal window
   document.getElementById('modal-close-btn')
     .addEventListener('click', () => div_modalContainer.style.display = 'none');
-  //Added the ability to close the modal using the 'esc' key
   document
     .addEventListener('keydown', (e) => e.key.toLowerCase() === 'escape' ? div_modalContainer.style.display = 'none' : false);
 }
