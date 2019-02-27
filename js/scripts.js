@@ -30,14 +30,19 @@ function checkStatus(response) {
   }
 }
 
-fetch(API_address)
-  .then(checkStatus)
-  .then(response => response.json())
-  .then(response => {
-    createEmployeeCards(response.results);
-    return response;
-  })
-  .catch(error => console.log('There was a problem with the response:', error));
+const promise_employeeDir = 
+  fetch(API_address)
+    .then(checkStatus)
+    .then(response => response.json())
+    .then(response => {
+      employeeList = response.results;
+      createEmployeeCards(employeeList);
+      createCardListeners(document.querySelectorAll('.card'));
+      return response;
+    })
+    .catch(error => console.log('There was a problem with the response:', error));
+
+
 
 //
 // EMPLOYEE CARD CREATION
@@ -65,8 +70,56 @@ function createEmployeeCards(employeeList) {
   employeeGallery.innerHTML = innerHTML;
 }
 
+/*
+ * Searches for a matching email address (received from the 'clicked' employee card') against the employee list.
+ * Creates a modal for that employee.
+ * @param   {Node}  employee - a single employee DOM node object 
+ */
+function createEmployeeModal(employee) {
+  var innerHTML = '';
+  const documentBody = document.getElementsByTagName('body')[0];
+  const search_Email = employee.querySelector('p').innerText;
+
+  const found_employee = employeeList.find((employeeListEmp) => {
+    return employeeListEmp.email === search_Email;
+  });
+
+  innerHTML += `<div class="modal-container">                                                                          
+		  <div class="modal">                                                                                
+		    <button type="button" id="modal-close-btn" class="modal-close-btn"><strong>X</strong></button> 
+		    <div class="modal-info-container">                                                             
+		      <img class="modal-img" src="${found_employee.picture.large}" alt="profile picture">           
+		      <h3 id="name" class="modal-name cap">${found_employee.name.first} ${found_employee.name.last}</h3>
+		      <p class="modal-text">${found_employee.email}</p>                                                            
+		      <p class="modal-text cap">${found_employee.location.city}</p>                                                         
+		      <hr>                                                                                       
+		      <p class="modal-text">${found_employee.cell}</p>                                                   
+		      <p class="modal-text">${found_employee.location.street}, 
+					    ${found_employee.location.city}, ${found_employee.location.state} ${found_employee.location.postcode}
+		      </p>
+		      <p class="modal-text">Birthday: ${found_employee.dob.date}</p>                                            
+		    </div>                                                                                         
+		  </div>
+		</div>`;
+  documentBody.innerHTML += innerHTML;
+
+  //Event listener for closing the modal windows
+  document.getElementById('modal-close-btn').
+    addEventListener('click', () => documentBody.removeChild(document.querySelector('.modal-container')));
+}
+
 
 
 //
 // EVENT LISTENERS
 //
+
+/*
+ * Create individual listeners for each employee card.
+ * @param   {NodeList}   employees - a DOM node element list of all the employees on the page
+ */
+function createCardListeners(employees) {
+  for (employee of employees) {
+    employee.addEventListener('click', (e) => {console.log(e.target); createEmployeeModal(e.target)});
+  }
+}
