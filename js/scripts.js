@@ -7,11 +7,26 @@ var api_employeeList = null;
 //
 // SETTING UP MODAL FRAMEWORK
 //
-const div_modalContainer = document.createElement('DIV');
+const dom_modalContainer = document.createElement('DIV');
 
-div_modalContainer.className = 'modal-container';
-div_modalContainer.style.display = 'none';
-dom_body.insertBefore(div_modalContainer, dom_body.querySelector('script'));
+dom_modalContainer.className = 'modal-container';
+dom_modalContainer.style.display = 'none';
+dom_body.insertBefore(dom_modalContainer, dom_body.querySelector('script'));
+
+dom_modalContainer.innerHTML += `<div class="modal">                                                                                
+				   <button type="button" id="modal-close-btn" class="modal-close-btn"><strong>X</strong></button> 
+				   <div class="modal-info-container">                                                             
+				     <img class="modal-img" src="" alt="profile picture">           
+				     <h3 id="name" class="modal-name cap"></h3>
+				     <p class="modal-text"></p>                                                            
+				     <p class="modal-text cap"></p>                                                         
+				     <hr>                                                                                       
+				     <p class="modal-text"></p>                                                   
+				     <p class="modal-text"></p>
+				     <p class="modal-text"></p>                                            
+				   </div>                                                                                         
+				 </div>`;
+
 
 
 //
@@ -57,7 +72,7 @@ fetch(API_address)
 function createEmployeeCards(employeeList) {
   var innerHTML = '';
   
-  for (employee of employeeList) {
+   for (var employee of employeeList) {
     innerHTML += `<div class="card"> 
 		    <div class="card-img-container">                                                  
 		      <img class="card-img" src="${employee.picture.large}" alt="profile picture"> 
@@ -74,13 +89,19 @@ function createEmployeeCards(employeeList) {
 
 /*
  * Searches for a matching email address (received from the 'clicked' employee card') against the employee list.
- * Searches for email because emails are generally not duplicated.
+ * Searches for email because emails are generally not duplicated; names can be.
  * Creates a modal for that employee.
- * @param   {Object}  employee - a single employee DOM node object 
+ * @param   {Object}  employee - a single employee card DOM node object 
+ *
+ *
+ * TO DO: setup up the frame work for the modal and just update the relevant information ie. innerText
+ *
+ *
  */
 function createEmployeeModal(employee) {
   const search_Email = employee.querySelector('p').innerText;
   const found_employee = api_employeeList.find(api_employee => api_employee.email === search_Email);//Find the employee in the local "database"
+  var innerHTML = '';
   //Visually formatting some of the employee information
   var employeeBirthDay = found_employee.dob.date.slice(5,7) + "/" +  //Month
 			 found_employee.dob.date.slice(8,10) + "/" + //Day
@@ -91,9 +112,17 @@ function createEmployeeModal(employee) {
   var employeeStreet = employeeStreetNo + " " + employeeStreetName;
   var employeeCity = found_employee.location.city.charAt(0).toUpperCase() + found_employee.location.city.slice(1);
   var employeeState = found_employee.location.state.charAt(0).toUpperCase() + found_employee.location.state.slice(1);
-  var innerHTML = '';
 
-  innerHTML += `<div class="modal">                                                                                
+  dom_modalContainer.querySelector('.modal-img').src = found_employee.picture.large;
+  dom_modalContainer.querySelector('#name').innerText = `${found_employee.name.first} ${found_employee.name.last}`;
+  dom_modalContainer.querySelectorAll('p')[0].innerText = found_employee.email;
+  dom_modalContainer.querySelectorAll('p')[1].innerText = found_employee.location.city;
+  dom_modalContainer.querySelectorAll('p')[2].innerText = found_employee.cell;
+  dom_modalContainer.querySelectorAll('p')[3].innerText = `${employeeStreet}, \
+							   ${employeeCity}, ${employeeState} ${found_employee.location.postcode}`;
+  dom_modalContainer.querySelectorAll('p')[4].innerText = `Birthday: ${employeeBirthDay}`;
+
+  /*innerHTML += `<div class="modal">                                                                                
 		  <button type="button" id="modal-close-btn" class="modal-close-btn"><strong>X</strong></button> 
 		  <div class="modal-info-container">                                                             
 		    <img class="modal-img" src="${found_employee.picture.large}" alt="profile picture">           
@@ -108,9 +137,8 @@ function createEmployeeModal(employee) {
 		    <p class="modal-text">Birthday: ${employeeBirthDay}</p>                                            
 		  </div>                                                                                         
 		</div>`;
-  div_modalContainer.innerHTML = innerHTML;
-  div_modalContainer.style.display = '';
-
+  dom_modalContainer.innerHTML = innerHTML;*/
+  dom_modalContainer.style.display = '';
   closeModalListener();
 }
 
@@ -125,7 +153,7 @@ function createEmployeeModal(employee) {
  * @param   {NodeList}   employees - a DOM node element list of all the employees on the page
  */
 function createCardListeners() {
-  for (employee of dom_employeeCards) {
+   for (var employee of dom_employeeCards) {
     employee.addEventListener('click', (e) => createEmployeeModal(e.currentTarget));
   }
 }
@@ -136,7 +164,59 @@ function createCardListeners() {
  */
 function closeModalListener() {
   document.getElementById('modal-close-btn')
-    .addEventListener('click', () => div_modalContainer.style.display = 'none');
+    .addEventListener('click', () => dom_modalContainer.style.display = 'none');
   document
-    .addEventListener('keydown', (e) => e.key.toLowerCase() === 'escape' ? div_modalContainer.style.display = 'none' : false);
+    .addEventListener('keydown', (e) => e.key.toLowerCase() === 'escape' ? dom_modalContainer.style.display = 'none' : false);
 }
+
+
+
+//
+// EXTRA CREDIT: SEARCH FUNCTION LISTENER
+//
+
+// EXTRA CREDIT: SEARCH FUNCTION & MODAL NAVIGATION FRAMEWORK
+const dom_searchContainer = document.querySelector('.search-container');
+
+//Adding search input and submit to body
+dom_searchContainer.innerHTML = `<form action="#" method="get">
+				   <input type="search" id="search-input" class="search-input" placeholder="Search...">
+				   <input type="submit" value="&#x1F50D;" id="search-submit" class="search-submit">
+				 </form>`;
+//Adding navgiation buttons to modal window
+dom_modalContainer.innerHTML += `<div class="modal-btn-container">
+				   <button type="button" id="modal-prev" class="modal-prev btn">Prev</button>
+				   <button type="button" id="modal-next" class="modal-next btn">Next</button>
+				 </div>`;
+
+function searchForUser() {
+  const userSearch = document.querySelector('#search-input').value.toLowerCase();
+
+  /*
+   * Flips employee cards to display or not display.
+   * @param	{String}  action - the action is either 'show' or 'hide'
+   */
+  function flipEmployeeCards(action) {
+     for (var employeeCard of dom_employeeCards) {
+      action === 'show' ? employeeCard.style.display = '' : employeeCard.style.display = 'none';
+    }
+  }
+
+  if (userSearch === '') {
+    flipEmployeeCards('show');
+  }else { 
+     for (var employeeCard of dom_employeeCards) {
+      if (employeeCard.querySelector('h3').innerText.toLowerCase() === userSearch) {
+	flipEmployeeCards('hide');
+	employeeCard.style.display = '';
+      }else {
+	document.querySelector('#search-input').value = '';
+      }
+    }
+  }
+}
+/*
+ * 'Submit' event listener for the search function.
+ */
+document.querySelector('#search-submit')
+  .addEventListener('click', searchForUser);
