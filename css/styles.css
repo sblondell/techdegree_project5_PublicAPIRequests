@@ -94,6 +94,14 @@ header h1 {
     overflow: hidden;
 }
 
+.card(odd) {
+    background: rgba(245, 245, 245, 0.9);
+}
+
+.card(even) {
+    background: rgba(245, 245, 245, 0.9);
+}
+
 .card-img {
     width: 95px;
     margin: 10px 15px auto 10px;
@@ -228,6 +236,12 @@ header h1 {
 
     .header-text-container {
         text-align: left;
+    }
+
+    .header-text-container h1 {
+	border: 0.08em solid black;
+	border-radius: 5px;
+	padding: 2px 5px 2px 5px;
     }
 
     .search-container {

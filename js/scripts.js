@@ -11,8 +11,6 @@ const dom_modalContainer = document.createElement('DIV');
 
 dom_modalContainer.className = 'modal-container';
 dom_modalContainer.style.display = 'none';
-dom_body.insertBefore(dom_modalContainer, dom_body.querySelector('script'));
-
 dom_modalContainer.innerHTML += `<div class="modal">                                                                                
 				   <button type="button" id="modal-close-btn" class="modal-close-btn"><strong>X</strong></button> 
 				   <div class="modal-info-container">                                                             
@@ -26,6 +24,7 @@ dom_modalContainer.innerHTML += `<div class="modal">
 				     <p class="modal-text"></p>                                            
 				   </div>                                                                                         
 				 </div>`;
+dom_body.insertBefore(dom_modalContainer, dom_body.querySelector('script'));
 
 
 
@@ -66,8 +65,8 @@ fetch(API_address)
 //
 
 /*
- * Create an employee card.
- * @param   {Object}  employeeList - an array of employee objects
+ * Create employee cards.
+ * @param   {Object}  employeeList - a JSON formatted object of employees
  */
 function createEmployeeCards(employeeList) {
   var innerHTML = '';
@@ -88,10 +87,10 @@ function createEmployeeCards(employeeList) {
 }
 
 /*
- * Searches for a matching email address (received from the 'clicked' employee card') against the employee list.
+ * Searches for a matching email address (received from the 'clicked' employee card') against the JSON employee object.
  * Searches for email because emails are generally not duplicated; names can be.
  * Creates a modal for that employee.
- * @param   {Object}  employee - a single employee card from the DOM 
+ * @param   {Object}  employee - a single employee node from the DOM 
  */
 function createEmployeeModal(employee) {
   const search_Email = employee.querySelector('p').innerText;
@@ -101,7 +100,9 @@ function createEmployeeModal(employee) {
   var employeeBirthDay = found_employee.dob.date.slice(5,7) + "/" +  //Month
 			 found_employee.dob.date.slice(8,10) + "/" + //Day
 			 found_employee.dob.date.slice(0,4);         //Year
+
   var employeeCell = found_employee.cell.replace('-', ' ');
+
   var employeeStreetNo = found_employee.location.street.match(/[0-9]+/)[0];
   var employeeStreetName = found_employee.location.street.match(/[^0-9 ]+/)[0].charAt(0).toUpperCase() +
 			   found_employee.location.street.match(/[^0-9 ]+/)[0].slice(1);
@@ -119,23 +120,6 @@ function createEmployeeModal(employee) {
   dom_modalContainer.querySelectorAll('p')[4].innerText = `Birthday: ${employeeBirthDay}`;
   dom_modalContainer.style.display = '';
   closeModalListener();
-
-  /*innerHTML += `<div class="modal">                                                                                
-		  <button type="button" id="modal-close-btn" class="modal-close-btn"><strong>X</strong></button> 
-		  <div class="modal-info-container">                                                             
-		    <img class="modal-img" src="${found_employee.picture.large}" alt="profile picture">           
-		    <h3 id="name" class="modal-name cap">${found_employee.name.first} ${found_employee.name.last}</h3>
-		    <p class="modal-text">${found_employee.email}</p>                                                            
-		    <p class="modal-text cap">${found_employee.location.city}</p>                                                         
-		    <hr>                                                                                       
-		    <p class="modal-text">${found_employee.cell}</p>                                                   
-		    <p class="modal-text">${employeeStreet}, 
-					  ${employeeCity}, ${employeeState} ${found_employee.location.postcode}
-		    </p>
-		    <p class="modal-text">Birthday: ${employeeBirthDay}</p>                                            
-		  </div>                                                                                         
-		</div>`;
-  dom_modalContainer.innerHTML = innerHTML;*/
 }
 
 
@@ -213,7 +197,7 @@ function searchForUser() {
   }
 }
 
-// 'Submit' search listener
+// Search listener
 document.querySelector('#search-submit')
   .addEventListener('click', searchForUser);
 
@@ -229,11 +213,11 @@ document.querySelector('.modal-btn-container')
 
     if (e.target.id === 'modal-next') {
       !employee_displayed.nextSibling ? 
-	employee_toBeDisplayed = dom_employeeCards[0] : 
+	employee_toBeDisplayed = dom_employeeCards[0] : // If at the end of the list, wrap around to the beginning
 	employee_toBeDisplayed = employee_displayed.nextSibling;
     }else if (e.target.id === 'modal-prev') {
       !employee_displayed.previousSibling ?
-	employee_toBeDisplayed = dom_employeeCards[dom_employeeCards.length - 1] :
+	employee_toBeDisplayed = dom_employeeCards[dom_employeeCards.length - 1] : // If at the start of the list, wrap around to the end
 	employee_toBeDisplayed = employee_displayed.previousSibling;
     }
     employee_toBeDisplayed ? createEmployeeModal(employee_toBeDisplayed) : false;
