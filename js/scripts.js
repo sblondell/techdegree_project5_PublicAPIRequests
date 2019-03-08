@@ -152,7 +152,7 @@ function closeModalListener() {
 
 
 //
-// EXTRA CREDIT: SEARCH FUNCTION LISTENER
+// EXTRA CREDIT: SEARCH FUNCTION AND MODAL NAVIGATION
 //
 
 //Adding search input and submit elements to the DOM 
@@ -168,34 +168,36 @@ dom_modalContainer.innerHTML += `<div class="modal-btn-container">
 				 </div>`;
 
 /*
+ * Flips employee cards to display or not display.
+ * @param   {String}  action - the action is either 'show' or 'hide'
+ */
+function flipEmployeeCards(action) {
+   for (let employeeCard of dom_employeeCards) {
+    action === 'show' ? employeeCard.style.display = '' : employeeCard.style.display = 'none';
+  }
+}
+
+/*
  * Iterates through the employee cards and displays the user's search.
  */
 function searchForUser() {
   const userSearch = document.querySelector('#search-input').value.toLowerCase();
 
-  /*
-   * Flips employee cards to display or not display.
-   * @param   {String}  action - the action is either 'show' or 'hide'
-   */
-  function flipEmployeeCards(action) {
-     for (let employeeCard of dom_employeeCards) {
-      action === 'show' ? employeeCard.style.display = '' : employeeCard.style.display = 'none';
-    }
-  }
-
-  if (userSearch === '') {
+  if (userSearch === '') { // If user enters a blank search, show all employees
     flipEmployeeCards('show');
   }else { 
      for (let employeeCard of dom_employeeCards) {
       if (employeeCard.querySelector('h3').innerText.toLowerCase() === userSearch) {
 	flipEmployeeCards('hide');
 	employeeCard.style.display = '';
-      }else {
-	document.querySelector('#search-input').value = '';
       }
     }
   }
 }
+
+// Adding the ability to go back to the main employee page when the title "Awesome Startup Employee Directory" is clicked
+document.querySelector('.header-text-container h1')
+  .addEventListener('click', () => flipEmployeeCards('show'));
 
 // Search listener
 document.querySelector('#search-submit')
@@ -204,8 +206,8 @@ document.querySelector('#search-submit')
 // Modal navigation button listener
 document.querySelector('.modal-btn-container')
   .addEventListener('click', (e) => {
-    var employee_displayed = null;
-    var employee_toBeDisplayed = null;
+    let employee_displayed = null;
+    let employee_toBeDisplayed = null;
 
     for (let employee of dom_employeeCards) {
       employee.querySelector('h3').textContent === dom_modalContainer.querySelector('h3').textContent ? employee_displayed = employee : false;
