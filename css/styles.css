@@ -17,9 +17,9 @@ body {
     font-family: "Nunito", sans-serif;
     text-align: center;
     background: rgba(235, 235, 235, 0.9);
-/* EXTRA CREDIT */
+    /* EXTRA CREDIT */
     background-image: url(https://i.ibb.co/LRj9rZy/brick-wall-3648x2736.jpg);
-/* ************ */
+    /* ************ */
 }
 
 
@@ -96,21 +96,21 @@ header h1 {
     /*border: 1px solid rgba(50, 50, 50, 0.3);*/
     transition: .4s ease-out;
     overflow: hidden;
-/* EXTRA CREDIT */
+    /* EXTRA CREDIT */
     border: 1.5px solid rgba(50, 50, 50, 0.9);
     background-image: url(https://i.ibb.co/pxwnw5T/red-and-green-leaves-with-wood-background-925x.jpg);
     background-size: cover;
     background-position: 0.2px;
-/* ********** */
+    /* ********** */
 }
 
 .card-img {
     width: 95px;
     margin: 10px 15px auto 10px;
     border-radius: 50%;
-/* EXTRA CREDIT */
+    /* EXTRA CREDIT */
     border: 2px solid black;
-/* ********** */
+    /* ********** */
 }
 
 .card-info-container {
@@ -247,10 +247,10 @@ header h1 {
 	border: 0.08em solid black;
 	border-radius: 5px;
 	padding: 2px 5px 2px 5px;
-/* EXTRA CREDIT */
-        background-color: rgba(159,99,120,0.7);
-        color: rgba(255,255,255,0.8)
-/* ************ */
+    /* EXTRA CREDIT */
+    background-color: rgba(159,99,120,0.7);
+    color: rgba(255,255,255,0.8)
+    /* ************ */
     }
 
     .search-container {
@@ -273,11 +273,11 @@ header h1 {
     .card:hover {
         background: rgba(255, 255, 255, 1);
         /*border: 1px solid rgba(50, 50, 50, 0.9);*/
-/* EXTRA CREDIT */
-	border: 1.5px solid rgba(50, 50, 50, 0.9);
-	background-image: url(https://i.ibb.co/5xBQFtH/leaves-white-brick-background-925x.jpg);
-	background-position: -10px;
-/* ********** */
+        /* EXTRA CREDIT */
+	    border: 1.5px solid rgba(50, 50, 50, 0.9);
+    	background-image: url(https://i.ibb.co/5xBQFtH/leaves-white-brick-background-925x.jpg);
+	    background-position: -10px;
+        /* ********** */
     }
 
     .card:hover .card-text {
