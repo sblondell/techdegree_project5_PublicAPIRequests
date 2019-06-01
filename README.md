@@ -1,3 +1,4 @@
+```
 /* techdegree project 5 - Public API Requests    */
 /* February 25, 2019                             */
 /*                                               */
@@ -25,3 +26,4 @@
         line-251,252 - changed background color of page title; changed text color of page title
         line-277,279 - changed border width of transitioned employee card; added a background image with position modifications
         line-293,294 - when title "Awesome Startup Employee Directory" is hovered, cursor turns into a pointer indicating navigation ability
+```
