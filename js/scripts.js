@@ -39,20 +39,20 @@ const API_address = `https://randomuser.me/api/?results=12&nat=US&inc=name,locat
  * @return  {Object}  Promise - the Promise object resolved from the request OR a 'reject' Promise object
  */
 function checkStatus(response) {
-  return response.ok ? Promise.resolve(response) : Promise.reject(new Error(response.statusText));
+    return response.ok ? Promise.resolve(response) : Promise.reject(new Error(response.statusText));
 }
 
 fetch(API_address)
-  .then(checkStatus)
-  .then(response => response.json())
-  .then(response => {
-    api_employeeList = response.results;
-    createEmployeeCards(api_employeeList);
-    dom_employeeCards = document.querySelectorAll('.card');
-    create_CardListeners();
-    return response;
-  })
-  .catch(error => console.log('There was a problem with the response:', error));
+    .then(checkStatus)
+    .then(response => response.json())
+    .then(response => {
+        api_employeeList = response.results;
+        createEmployeeCards(api_employeeList);
+        dom_employeeCards = document.querySelectorAll('.card');
+        create_CardListeners();
+        return response;
+    })
+    .catch(error => console.log('There was a problem with the response:', error));
 
 
 
@@ -65,10 +65,10 @@ fetch(API_address)
  * @param   {Object}  employeeList - a JSON formatted object of employees
  */
 function createEmployeeCards(employeeList) {
-  var innerHTML = '';
+    var innerHTML = '';
 
-  for (let employee of employeeList) {
-    innerHTML += `<div class="card"> 
+    for (let employee of employeeList) {
+        innerHTML += `<div class="card"> 
 		    <div class="card-img-container">                                                  
 		      <img class="card-img" src="${employee.picture.large}" alt="profile picture"> 
 		    </div>                                                                            
@@ -78,8 +78,8 @@ function createEmployeeCards(employeeList) {
 		      <p class="card-text cap">${employee.location.city}, ${employee.location.state}</p>
 		    </div>
 		  </div>`;
-  }
-  dom_employeeGallery.innerHTML = innerHTML;
+    }
+    dom_employeeGallery.innerHTML = innerHTML;
 }
 
 /*
@@ -89,33 +89,33 @@ function createEmployeeCards(employeeList) {
  * @param   {Object}  employee - a single employee node from the DOM 
  */
 function createEmployeeModal(employee) {
-  const search_Email = employee.querySelector('p').innerText;
-  const found_employee = api_employeeList.find(api_employee => api_employee.email === search_Email);//Find the employee in the local "database"
-  var innerHTML = '';
-  //Visually formatting some of the employee information
-  var employeeBirthDay = found_employee.dob.date.slice(5, 7) + "/" +  //Month
-    found_employee.dob.date.slice(8, 10) + "/" +                      //Day
-    found_employee.dob.date.slice(0, 4);                              //Year
+    const search_Email = employee.querySelector('p').innerText;
+    const found_employee = api_employeeList.find(api_employee => api_employee.email === search_Email);//Find the employee in the local "database"
+    var innerHTML = '';
+    //Visually formatting some of the employee information
+    var employeeBirthDay = found_employee.dob.date.slice(5, 7) + "/" +  //Month
+        found_employee.dob.date.slice(8, 10) + "/" +                      //Day
+        found_employee.dob.date.slice(0, 4);                              //Year
 
-  var employeeCell = found_employee.cell.replace('-', ' ');
+    var employeeCell = found_employee.cell.replace('-', ' ');
 
-  var employeeStreetNo = found_employee.location.street.match(/[0-9]+/)[0];
-  var employeeStreetName = found_employee.location.street.match(/[^0-9 ]+/)[0].charAt(0).toUpperCase() +
-    found_employee.location.street.match(/[^0-9 ]+/)[0].slice(1);
-  var employeeStreet = employeeStreetNo + " " + employeeStreetName;
-  var employeeCity = found_employee.location.city.charAt(0).toUpperCase() + found_employee.location.city.slice(1);
-  var employeeState = found_employee.location.state.charAt(0).toUpperCase() + found_employee.location.state.slice(1);
+    var employeeStreetNo = found_employee.location.street.number.toString().match(/[0-9]+/)[0];
+    var employeeStreetName = found_employee.location.street.name.match(/[^0-9 ]+/)[0].charAt(0).toUpperCase() +
+        found_employee.location.street.name.match(/[^0-9 ]+/)[0].slice(1);
+    var employeeStreet = employeeStreetNo + " " + employeeStreetName;
+    var employeeCity = found_employee.location.city.charAt(0).toUpperCase() + found_employee.location.city.slice(1);
+    var employeeState = found_employee.location.state.charAt(0).toUpperCase() + found_employee.location.state.slice(1);
 
-  dom_modalContainer.querySelector('.modal-img').src = found_employee.picture.large;
-  dom_modalContainer.querySelector('#name').innerText = `${found_employee.name.first} ${found_employee.name.last}`;
-  dom_modalContainer.querySelectorAll('p')[0].innerText = found_employee.email;
-  dom_modalContainer.querySelectorAll('p')[1].innerText = found_employee.location.city;
-  dom_modalContainer.querySelectorAll('p')[2].innerText = employeeCell;
-  dom_modalContainer.querySelectorAll('p')[3].innerText = `${employeeStreet}, \
+    dom_modalContainer.querySelector('.modal-img').src = found_employee.picture.large;
+    dom_modalContainer.querySelector('#name').innerText = `${found_employee.name.first} ${found_employee.name.last}`;
+    dom_modalContainer.querySelectorAll('p')[0].innerText = found_employee.email;
+    dom_modalContainer.querySelectorAll('p')[1].innerText = found_employee.location.city;
+    dom_modalContainer.querySelectorAll('p')[2].innerText = employeeCell;
+    dom_modalContainer.querySelectorAll('p')[3].innerText = `${employeeStreet}, \
 							   ${employeeCity}, ${employeeState} ${found_employee.location.postcode}`;
-  dom_modalContainer.querySelectorAll('p')[4].innerText = `Birthday: ${employeeBirthDay}`;
-  dom_modalContainer.style.display = '';
-  create_closeModalWinListener();
+    dom_modalContainer.querySelectorAll('p')[4].innerText = `Birthday: ${employeeBirthDay}`;
+    dom_modalContainer.style.display = '';
+    create_closeModalWinListener();
 }
 
 
@@ -129,9 +129,9 @@ function createEmployeeModal(employee) {
  * @param   {NodeList}   employees - a DOM node element list of all the employees on the page
  */
 function create_CardListeners() {
-  for (var employee of dom_employeeCards) {
-    employee.addEventListener('click', (e) => createEmployeeModal(e.currentTarget));
-  }
+    for (var employee of dom_employeeCards) {
+        employee.addEventListener('click', (e) => createEmployeeModal(e.currentTarget));
+    }
 }
 
 /*
@@ -139,10 +139,10 @@ function create_CardListeners() {
  * Added the ability to close the modal using the 'esc' key.
  */
 function create_closeModalWinListener() {
-  document.getElementById('modal-close-btn')
-    .addEventListener('click', () => dom_modalContainer.style.display = 'none');
-  document
-    .addEventListener('keydown', (e) => e.key.toLowerCase() === 'escape' ? dom_modalContainer.style.display = 'none' : false);
+    document.getElementById('modal-close-btn')
+        .addEventListener('click', () => dom_modalContainer.style.display = 'none');
+    document
+        .addEventListener('keydown', (e) => e.key.toLowerCase() === 'escape' ? dom_modalContainer.style.display = 'none' : false);
 }
 
 
@@ -168,57 +168,57 @@ dom_modalContainer.innerHTML += `<div class="modal-btn-container">
  * @param   {String}  action - the action is either 'show' or 'hide'
  */
 function flipEmployeeCards(action) {
-  for (let employeeCard of dom_employeeCards) {
-    action === 'show' ? employeeCard.style.display = '' : employeeCard.style.display = 'none';
-  }
+    for (let employeeCard of dom_employeeCards) {
+        action === 'show' ? employeeCard.style.display = '' : employeeCard.style.display = 'none';
+    }
 }
 
 /*
  * Iterates through the employee cards and displays the user's search.
  */
 function searchForUser() {
-  event.preventDefault();
-  const userSearch = document.querySelector('#search-input').value.toLowerCase();
+    event.preventDefault();
+    const userSearch = document.querySelector('#search-input').value.toLowerCase();
 
-  if (userSearch === '') { // If user enters a blank search, show all employees
-    flipEmployeeCards('show');
-  } else {
-    flipEmployeeCards('hide');
-    for (let employeeCard of dom_employeeCards) {
-      let employeeCard_name = employeeCard.querySelector('h3').innerText.toLowerCase();
+    if (userSearch === '') { // If user enters a blank search, show all employees
+        flipEmployeeCards('show');
+    } else {
+        flipEmployeeCards('hide');
+        for (let employeeCard of dom_employeeCards) {
+            let employeeCard_name = employeeCard.querySelector('h3').innerText.toLowerCase();
 
-      employeeCard_name.includes(userSearch) ? employeeCard.style.display = '' : null;
+            employeeCard_name.includes(userSearch) ? employeeCard.style.display = '' : null;
+        }
     }
-  }
 }
 
 // Adding the ability to go back to the main employee page when the title "Awesome Startup Employee Directory" is clicked
 document.querySelector('.header-text-container h1')
-  .addEventListener('click', () => flipEmployeeCards('show'));
+    .addEventListener('click', () => flipEmployeeCards('show'));
 
 // Search form listener
 document.querySelector('#search-submit')
-  .addEventListener('click', () => searchForUser());
+    .addEventListener('click', () => searchForUser());
 
 // Modal navigation button listener
 document.querySelector('.modal-btn-container')
-  .addEventListener('click', e => {
-    let employee_displayed = null;
-    let employee_toBeDisplayed = null;
+    .addEventListener('click', e => {
+        let employee_displayed = null;
+        let employee_toBeDisplayed = null;
 
-    // Finding the currently displayed employee in the modal window...
-    for (let employee of dom_employeeCards) {
-      employee.querySelector('h3').textContent === dom_modalContainer.querySelector('h3').textContent ? employee_displayed = employee : false;
-    }
+        // Finding the currently displayed employee in the modal window...
+        for (let employee of dom_employeeCards) {
+            employee.querySelector('h3').textContent === dom_modalContainer.querySelector('h3').textContent ? employee_displayed = employee : false;
+        }
 
-    if (e.target.id === 'modal-next') {
-      !employee_displayed.nextSibling ?
-        employee_toBeDisplayed = dom_employeeCards[0] : // If at the end of the list, wrap around to the beginning
-        employee_toBeDisplayed = employee_displayed.nextSibling;
-    } else if (e.target.id === 'modal-prev') {
-      !employee_displayed.previousSibling ?
-        employee_toBeDisplayed = dom_employeeCards[dom_employeeCards.length - 1] : // If at the start of the list, wrap around to the end
-        employee_toBeDisplayed = employee_displayed.previousSibling;
-    }
-    employee_toBeDisplayed ? createEmployeeModal(employee_toBeDisplayed) : false;
-  });
+        if (e.target.id === 'modal-next') {
+            !employee_displayed.nextSibling ?
+                employee_toBeDisplayed = dom_employeeCards[0] : // If at the end of the list, wrap around to the beginning
+                employee_toBeDisplayed = employee_displayed.nextSibling;
+        } else if (e.target.id === 'modal-prev') {
+            !employee_displayed.previousSibling ?
+                employee_toBeDisplayed = dom_employeeCards[dom_employeeCards.length - 1] : // If at the start of the list, wrap around to the end
+                employee_toBeDisplayed = employee_displayed.previousSibling;
+        }
+        employee_toBeDisplayed ? createEmployeeModal(employee_toBeDisplayed) : false;
+    });
